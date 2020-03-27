@@ -3,6 +3,7 @@ package com.example.nairobiguideapp.Common;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.WindowManager;
@@ -21,9 +22,10 @@ public class SplashScreen extends AppCompatActivity {
 
     //Animations
     Animation sideAnim,bottomAnim;
+    SharedPreferences sharedPreferences;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.splash_screen);
@@ -41,9 +43,25 @@ public class SplashScreen extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent=new Intent(SplashScreen.this, UserDashboard.class);
-                startActivity(intent);
-                finish();
+                sharedPreferences= getSharedPreferences("onBoardingScreen",MODE_PRIVATE);
+
+                boolean isFirstTime = sharedPreferences.getBoolean("firstTime",true);
+
+                if(isFirstTime) {
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putBoolean("firstTime",false);
+                    editor.commit();
+
+                    Intent intent = new Intent(SplashScreen.this, OnBoarding.class);
+                    startActivity(intent);
+                    finish();
+
+                }else{
+                    Intent intent = new Intent(SplashScreen.this, UserDashboard.class);
+                    startActivity(intent);
+                    finish();
+
+                }
 
             }
         },SPLASH_TIMER);
